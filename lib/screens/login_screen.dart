@@ -1,10 +1,62 @@
-import 'signup_screen.dart';
-TextButton(
-onPressed: () {
-Navigator.push(
-context,
-MaterialPageRoute(builder: (context) => const SignupScreen()),
-);
-},
-child: const Text("Don't have an account? Sign Up"),
-),
+
+import 'package:flutter/material.dart';
+import 'package:banasthali_buddy/widgets/custom_button.dart';
+import 'package:banasthali_buddy/widgets/custom_textfield.dart';
+import 'package:banasthali_buddy/screens/home_screen.dart';
+import 'package:banasthali_buddy/screens/signup_screen.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomTextField(
+              controller: _emailController,
+              hintText: 'Email',
+            ),
+            const SizedBox(height: 16),
+            CustomTextField(
+              controller: _passwordController,
+              hintText: 'Password',
+              obscureText: true,
+            ),
+            const SizedBox(height: 24),
+            CustomButton(
+              text: 'Login',
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                );
+              },
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignupScreen()),
+                );
+              },
+              child: const Text("Don't have an account? Sign Up"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
