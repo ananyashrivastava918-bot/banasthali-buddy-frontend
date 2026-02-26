@@ -89,16 +89,18 @@ class _SignupScreenState extends State<SignupScreen> {
                       }
 
                       if (success) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => LoginScreen()),
-                        );
-                      }
-                      else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text("Signup successful. Please login.")),
                         );
 
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginScreen()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Signup failed")),
+                        );
                       }
                     },
                     child: isLoading
