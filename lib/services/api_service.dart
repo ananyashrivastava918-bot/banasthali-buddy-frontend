@@ -24,7 +24,7 @@ class ApiService {
       print("SIGNUP BODY: ${response.body}");
 
       // ANY 2xx = SUCCESS
-      return response.statusCode == 200 && response.statusCode == 201;
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       print("SIGNUP ERROR: $e");
       return false;
