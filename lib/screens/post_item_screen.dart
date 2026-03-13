@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'home_screen.dart'; // 🔹 ADD THIS
 
 class PostItemScreen extends StatefulWidget {
   const PostItemScreen({super.key});
@@ -57,12 +58,30 @@ class _PostItemScreenState extends State<PostItemScreen> {
       appBar: AppBar(
         title: const Text("Post Item"),
         centerTitle: true,
+
+        /// 🔹 NEW HOME BUTTON (same as Buy screen)
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const HomeScreen(),
+                ),
+                    (route) => false,
+              );
+            },
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
           child: Column(
             children: [
+
               /// IMAGE PICKER
               GestureDetector(
                 onTap: _pickImage,
@@ -75,7 +94,8 @@ class _PostItemScreenState extends State<PostItemScreen> {
                   ),
                   child: _itemImage == null
                       ? const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment:
+                    MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add_a_photo, size: 40),
                       SizedBox(height: 8),
@@ -91,7 +111,6 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 20),
 
-              /// ITEM NAME
               TextField(
                 controller: itemNameController,
                 decoration: const InputDecoration(
@@ -102,7 +121,6 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 15),
 
-              /// DESCRIPTION
               TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(
@@ -113,7 +131,6 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 15),
 
-              /// PRICE
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
@@ -125,18 +142,18 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 25),
 
-              /// SELLER CONTACT DETAILS
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Seller Contact",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
 
               const SizedBox(height: 10),
 
-              /// HOSTEL NAME
               TextField(
                 controller: hostelController,
                 decoration: const InputDecoration(
@@ -147,7 +164,6 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 15),
 
-              /// CONTACT NUMBER
               TextField(
                 controller: contactController,
                 keyboardType: TextInputType.phone,
@@ -159,7 +175,6 @@ class _PostItemScreenState extends State<PostItemScreen> {
 
               const SizedBox(height: 25),
 
-              /// POST BUTTON
               SizedBox(
                 width: double.infinity,
                 height: 45,
