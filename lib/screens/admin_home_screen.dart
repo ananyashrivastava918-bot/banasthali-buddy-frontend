@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'admin_dashboard.dart';
+import 'admin_dashboard_screen.dart';
 import 'admin_users_screen.dart';
 import 'admin_routes_screen.dart';
 import 'admin_settings_screen.dart';

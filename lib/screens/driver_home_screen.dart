@@ -4,6 +4,7 @@ import 'ride_request_screen.dart';
 import 'active_ride_screen.dart';
 import 'update_gps_screen.dart';
 import 'ride_history_screen.dart';
+import 'settings_screen.dart'; // 🔹 SETTINGS IMPORT
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -41,17 +42,36 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: const Padding(
-              padding: EdgeInsets.only(top: 70),
-              child: Center(
-                child: Text(
-                  "Driver Dashboard",
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 70, left: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+
+                  /// ⚙️ SETTINGS BUTTON (TOP LEFT)
+                  IconButton(
+                    icon: const Icon(Icons.settings, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsScreen(role: "driver"),
+                        ),
+                      );
+                    },
                   ),
-                ),
+
+                  const Text(
+                    "Driver Dashboard",
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(width: 40), // spacing balance
+                ],
               ),
             ),
           ),
@@ -171,7 +191,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
                   const SizedBox(height: 30),
 
-                  /// 🔴 LOGOUT BUTTON (NEWLY ADDED)
+                  /// 🔴 LOGOUT BUTTON
                   SizedBox(
                     width: double.infinity,
                     height: 55,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/driver_home_screen.dart';
+import 'package:frontend/screens/admin_home_screen.dart';
 import '../services/api_service.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -11,14 +13,14 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
 
-  // 🔹 STEP 3 (added): controllers
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // 🔹 STEP 3 (added): service + loading
   final ApiService apiService = ApiService();
   bool isLoading = false;
+
+  String selectedRole = "Student";
 
   @override
   Widget build(BuildContext context) {
@@ -29,97 +31,135 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
-          child: Form(
-            child: Column(
-              children: [
+          child: Column(
+            children: [
 
-                /// Name
-                TextFormField(
-                  controller: nameController, // 🔥 THIS MUST BE PRESENT
-                  decoration: const InputDecoration(
-                    labelText: "Full Name",
-                  ),
+              /// ROLE DROPDOWN
+              DropdownButtonFormField<String>(
+                value: selectedRole,
+                decoration: const InputDecoration(
+                  labelText: "Select Role",
                 ),
+                items: ["Student", "Driver", "Admin"]
+                    .map((role) => DropdownMenuItem(
+                  value: role,
+                  child: Text(role),
+                ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedRole = value!;
+                  });
+                },
+              ),
 
+              const SizedBox(height: 15),
 
-                const SizedBox(height: 15),
-
-                /// Email
-                TextFormField(
-                  controller: emailController, // ✅ added
-                  decoration: const InputDecoration(
-                    labelText: "Email",
-                  ),
+              /// Name
+              TextFormField(
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: "Full Name",
                 ),
+              ),
 
-                const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-                /// Password
-                TextFormField(
-                  controller: passwordController, // ✅ added
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: "Password",
-                  ),
+              /// Email
+              TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: "Email",
                 ),
+              ),
 
-                const SizedBox(height: 25),
+              const SizedBox(height: 15),
 
-                /// Sign Up Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 45,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      setState(() => isLoading = true);
+              /// Password
+              TextFormField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: "Password",
+                ),
+              ),
 
-                      final success = await apiService.signup(
-                        nameController.text.trim(),
-                        emailController.text.trim(),
-                        passwordController.text.trim(),
-                      );
+              const SizedBox(height: 25),
 
-                      setState(() => isLoading = false);
-                      if (!mounted) return;
-                      if (nameController.text.trim().isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Username is required")),
-                        );
-                        return;
-                      }
+              /// Sign Up Button
+              SizedBox(
+                width: double.infinity,
+                height: 45,
+                child: ElevatedButton(
+                  onPressed: () async {
 
-                      if (success) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Signup successful. Please login.")),
-                        );
+                    setState(() => isLoading = true);
+
+                    final success = await apiService.signup(
+                      nameController.text.trim(),
+                      emailController.text.trim(),
+                      passwordController.text.trim(),
+                      selectedRole.toLowerCase(),
+                    );
+
+                    setState(() => isLoading = false);
+
+                    if (!mounted) return;
+
+                    if (success) {
+
+                      if (selectedRole == "Driver") {
 
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (_) => LoginScreen()),
+                          MaterialPageRoute(
+                            builder: (_) => const DriverHomeScreen(),
+                          ),
                         );
+
+                      } else if (selectedRole == "Admin") {
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminHomeScreen(),
+                          ),
+                        );
+
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Signup failed")),
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HomeScreen(),
+                          ),
                         );
+
                       }
-                    },
-                    child: isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Sign Up"),
-                  ),
-                ),
 
-                const SizedBox(height: 15),
+                    } else {
 
-                /// Back to Login
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Signup failed")),
+                      );
+
+                    }
                   },
-                  child: const Text("Already have an account? Login"),
+                  child: isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Sign Up"),
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 15),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("Already have an account? Login"),
+              ),
+            ],
           ),
         ),
       ),

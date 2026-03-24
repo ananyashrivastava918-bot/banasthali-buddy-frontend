@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/signup_screen.dart';
+import '../services/api_service.dart'; // ✅ ADD THIS
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -11,9 +12,16 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  final ApiService apiService = ApiService(); // ✅ ADD THIS
+
   @override
   void initState() {
     super.initState();
+
+    // ✅ NEW: Server warmup (NO UI CHANGE)
+    apiService.pingServer();
+
     Future.delayed(const Duration(seconds: 10), () {
       if (mounted) {
         Navigator.pushReplacement(
@@ -48,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
               /// 🔵 LOGO
               Image.asset(
                 'assets/images/logo.jpeg',
-                height: 200, // thoda balanced size
+                height: 200,
               ),
 
               const SizedBox(height: 20),

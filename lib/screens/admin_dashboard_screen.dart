@@ -1,7 +1,38 @@
 import 'package:flutter/material.dart';
+import '../services/admin_api_service.dart';
 
-class AdminDashboard extends StatelessWidget {
+class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
+
+  @override
+  State<AdminDashboard> createState() => _AdminDashboardState();
+}
+
+class _AdminDashboardState extends State<AdminDashboard> {
+
+  int students = 0;
+  int drivers = 0;
+  int rides = 0;
+  int listings = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDashboard();
+  }
+
+  void loadDashboard() async {
+    String token = "YOUR_JWT_TOKEN";
+
+    final data = await AdminApiService.getDashboardStats();
+
+    setState(() {
+      students = data["students"];
+      drivers = data["drivers"];
+      rides = data["activeRides"];
+      listings = data["listings"];
+    });
+  }
 
   Widget dashboardCard(String title, String value, IconData icon) {
     return Card(
@@ -40,7 +71,6 @@ class AdminDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Admin Dashboard"),
         backgroundColor: const Color(0xFF2F6F6D),
@@ -56,13 +86,13 @@ class AdminDashboard extends StatelessWidget {
 
           children: [
 
-            dashboardCard("Students", "240", Icons.school),
+            dashboardCard("Students", students.toString(), Icons.school),
 
-            dashboardCard("Drivers", "12", Icons.drive_eta),
+            dashboardCard("Drivers", drivers.toString(), Icons.drive_eta),
 
-            dashboardCard("Active Rides", "8", Icons.directions_car),
+            dashboardCard("Active Rides", rides.toString(), Icons.directions_car),
 
-            dashboardCard("Listings", "5", Icons.store),
+            dashboardCard("Listings", listings.toString(), Icons.store),
 
           ],
         ),

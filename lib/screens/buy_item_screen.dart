@@ -54,10 +54,28 @@ class _BuyItemScreenState extends State<BuyItemScreen> {
       backgroundColor: const Color(0xFFE6F4F1),
       appBar: AppBar(
         backgroundColor: const Color(0xFF2F6F6D),
-        title: const Text("Buy Items"),
+
+        /// ✅ UPDATED TITLE (ONLY CHANGE)
+        title: const Text(
+          "Buy Items",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                blurRadius: 4,
+                color: Colors.black26,
+                offset: Offset(1, 2),
+              ),
+            ],
+          ),
+        ),
+
         centerTitle: true,
 
-        /// 🔹 NEW HOME BUTTON
+        /// 🔹 HOME BUTTON (UNCHANGED)
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -109,17 +127,15 @@ class _BuyItemScreenState extends State<BuyItemScreen> {
                   final item = filteredItems[index];
 
                   return Container(
-                    margin:
-                    const EdgeInsets.only(bottom: 15),
+                    margin: const EdgeInsets.only(bottom: 15),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius:
-                      BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(18),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black
-                              .withOpacity(0.05),
+                          color:
+                          Colors.black.withOpacity(0.05),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         )
@@ -182,8 +198,7 @@ class _BuyItemScreenState extends State<BuyItemScreen> {
                             shape:
                             RoundedRectangleBorder(
                               borderRadius:
-                              BorderRadius.circular(
-                                  12),
+                              BorderRadius.circular(12),
                             ),
                           ),
                           onPressed: () {
@@ -220,8 +235,7 @@ class _BuyItemScreenState extends State<BuyItemScreen> {
                                   ),
                             );
                           },
-                          child:
-                          const Text("Contact"),
+                          child: const Text("Contact"),
                         ),
                       ],
                     ),

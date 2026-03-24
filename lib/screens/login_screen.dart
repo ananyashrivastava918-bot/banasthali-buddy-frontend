@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen.dart';
-import 'package:frontend/screens/driver_home_screen.dart'; // 🔹 driver home
+import 'package:frontend/screens/driver_home_screen.dart';
+import 'package:frontend/screens/admin_home_screen.dart';
 import 'package:frontend/screens/signup_screen.dart';
 import '../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,10 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final ApiService apiService = ApiService();
   bool isLoading = false;
-  bool rememberMe = false;
 
-  /// 🔹 NEW ROLE VARIABLE
-  String selectedRole = "Student";
+  // ✅ NEW: Password visibility
+  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -82,32 +83,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 20),
 
-                    /// 🔹 ROLE DROPDOWN
-                    DropdownButtonFormField<String>(
-                      value: selectedRole,
-                      decoration: InputDecoration(
-                        labelText: "Select Role",
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      items: ["Student", "Driver"]
-                          .map((role) => DropdownMenuItem(
-                        value: role,
-                        child: Text(role),
-                      ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedRole = value!;
-                        });
-                      },
-                    ),
-
-                    const SizedBox(height: 15),
-
                     /// Email
                     TextFormField(
                       controller: emailController,
@@ -123,10 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 15),
 
-                    /// Password
+                    /// Password (UPDATED)
                     TextFormField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: !isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: "Password",
                         filled: true,
@@ -134,10 +109,42 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    /// ✅ Forgot Password Button
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Forgot Password Clicked")),
+                          );
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            color: Color(0xFF2F6F6D),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
 
                     /// Login Button
                     SizedBox(
@@ -154,34 +161,54 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           setState(() => isLoading = true);
 
-                          final success = await apiService.login(
+                          final result = await apiService.login(
                             emailController.text.trim(),
                             passwordController.text.trim(),
-                            //selectedRole.toLowerCase(), // 🔹 role sent
                           );
 
-                          if (!mounted) return;
                           setState(() => isLoading = false);
 
-                          if (success) {
+                          if (!mounted) return;
 
-                            if (selectedRole == "Student") {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const HomeScreen(),
-                                ),
-                              );
-                            } else {
+                          if (result["success"] == true) {
+
+                            final prefs = await SharedPreferences.getInstance();
+
+                            await prefs.setString("token", result["token"]);
+
+                            print("TOKEN SAVED: ${result["token"]}");
+
+                            String role = result["role"];
+
+                            if (role == "driver") {
+
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => const DriverHomeScreen(),
                                 ),
                               );
-                            }
 
+                            } else if (role == "admin") {
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const AdminHomeScreen(),
+                                ),
+                              );
+
+                            } else {
+
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HomeScreen(),
+                                ),
+                              );
+                            }
                           } else {
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text("Login failed")),
                             );
@@ -189,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: isLoading
                             ? const CircularProgressIndicator(color: Colors.white)
-                            : const Text("Sign In"),
+                            : const Text("Login"),
                       ),
                     ),
 
@@ -200,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignupScreen(),
+                            builder: (_) => const SignupScreen(),
                           ),
                         );
                       },

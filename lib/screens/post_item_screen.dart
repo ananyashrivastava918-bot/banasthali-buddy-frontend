@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'home_screen.dart'; // 🔹 ADD THIS
+import 'home_screen.dart';
 
 class PostItemScreen extends StatefulWidget {
   const PostItemScreen({super.key});
@@ -20,15 +20,98 @@ class _PostItemScreenState extends State<PostItemScreen> {
   final TextEditingController hostelController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
 
+  /// ✅ UPDATED BOTTOM SHEET UI
   Future<void> _pickImage() async {
-    final XFile? image =
-    await _picker.pickImage(source: ImageSource.gallery);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
 
-    if (image != null) {
-      setState(() {
-        _itemImage = File(image.path);
-      });
-    }
+                /// 🔹 TOP BAR (CLOSE + TITLE + DELETE)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+
+                    /// ❌ CLOSE
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Color(0xFF2F6F6D)),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+
+                    const Text(
+                      " Add Picture",
+                      style: TextStyle(
+                        color: Color(0xFF2F6F6D),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    /// 🗑️ DELETE
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Color(0xFF2F6F6D)),
+                      onPressed: () {
+                        setState(() {
+                          _itemImage = null;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                /// 📸 CAMERA
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: Color(0xFF2F6F6D)),
+                  title: const Text("Camera",
+                      style: TextStyle(color: Color(0xFF2F6F6D))),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final XFile? image =
+                    await _picker.pickImage(source: ImageSource.camera);
+
+                    if (image != null) {
+                      setState(() {
+                        _itemImage = File(image.path);
+                      });
+                    }
+                  },
+                ),
+
+                /// 🖼️ GALLERY
+                ListTile(
+                  leading: const Icon(Icons.image, color: Color(0xFF2F6F6D)),
+                  title: const Text("Gallery",
+                      style: TextStyle(color: Color(0xFF2F6F6D))),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final XFile? image =
+                    await _picker.pickImage(source: ImageSource.gallery);
+
+                    if (image != null) {
+                      setState(() {
+                        _itemImage = File(image.path);
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _postItem() {
@@ -55,11 +138,28 @@ class _PostItemScreenState extends State<PostItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Post Item"),
-        centerTitle: true,
 
-        /// 🔹 NEW HOME BUTTON (same as Buy screen)
+      /// HEADER (same as Buy screen)
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF2F6F6D),
+        title: const Text(
+          "Post Item",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                blurRadius: 4,
+                color: Colors.black26,
+                offset: Offset(1, 2),
+              ),
+            ],
+          ),
+        ),
+
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.home),
@@ -82,7 +182,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
           child: Column(
             children: [
 
-              /// IMAGE PICKER
+              /// IMAGE PICKER (UNCHANGED)
               GestureDetector(
                 onTap: _pickImage,
                 child: Container(
@@ -94,8 +194,7 @@ class _PostItemScreenState extends State<PostItemScreen> {
                   ),
                   child: _itemImage == null
                       ? const Column(
-                    mainAxisAlignment:
-                    MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.add_a_photo, size: 40),
                       SizedBox(height: 8),

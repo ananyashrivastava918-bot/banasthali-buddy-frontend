@@ -1,43 +1,85 @@
 import 'package:flutter/material.dart';
+import '../services/admin_api_service.dart';
 
-class AdminUsersScreen extends StatelessWidget {
+class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  State<AdminUsersScreen> createState() => _AdminUsersScreenState();
+}
 
+class _AdminUsersScreenState extends State<AdminUsersScreen> {
+
+  List users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsers();
+  }
+
+  // Load users from backend
+  void loadUsers() async {
+
+    String token = "YOUR_JWT_TOKEN"; // later replace with stored token
+
+    final data = await AdminApiService.getUsers();
+
+    setState(() {
+      users = data;
+    });
+  }
+
+  // Delete user
+  void deleteUser(String id) async {
+
+    String token = "YOUR_JWT_TOKEN";
+
+    await AdminApiService.deleteUser(id);
+
+    loadUsers(); // refresh list
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
       appBar: AppBar(
         title: const Text("Manage Users"),
         backgroundColor: const Color(0xFF2F6F6D),
       ),
 
-      body: ListView(
+      body: ListView.builder(
+        itemCount: users.length,
+        itemBuilder: (context, index){
 
-        children: [
+          final user = users[index];
 
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.person)),
-            title: const Text("Amit Sharma"),
-            subtitle: const Text("Student"),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {},
-            ),
-          ),
+          return Column(
+            children: [
 
-          const Divider(),
+              ListTile(
+                leading: const CircleAvatar(
+                  child: Icon(Icons.person),
+                ),
 
-          ListTile(
-            leading: const CircleAvatar(child: Icon(Icons.person)),
-            title: const Text("Ravi Kumar"),
-            subtitle: const Text("Driver"),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {},
-            ),
-          ),
-        ],
+                title: Text(user["username"] ?? ""),
+
+                subtitle: Text(user["role"] ?? ""),
+
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    deleteUser(user["id"]);
+                  },
+                ),
+              ),
+
+              const Divider(),
+
+            ],
+          );
+        },
       ),
     );
   }
